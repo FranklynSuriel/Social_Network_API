@@ -1,0 +1,31 @@
+{
+  "name": "social_network_api",
+  "version": "1.0.0",
+  "description": "A social network API to make friends, share the thoughts and react to them., and create a list of your friends",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index",
+    "seed": "node utils/seed",
+    "heroku-postbuild": "node utils/seed.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FranklynSuriel/Social_Network_API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FranklynSuriel/Social_Network_API/issues"
+  },
+  "homepage": "https://github.com/FranklynSuriel/Social_Network_API#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.9"
+  }
+}
