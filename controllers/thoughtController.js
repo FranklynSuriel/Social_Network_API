@@ -15,26 +15,36 @@ module.exports = {
     async getSingleThought(req, res) {
         try {
             const singleThoughtData = await Thought.findOne({ _id: req.params.thoughtId })
-            .select('-__v')
-            
+                .select('-__v')
+
             if (!singleThoughtData) {
                 return res.status(404).json({ message: 'No Thought with that id!' });
             }
 
             res.json(singleThoughtData)
 
-        } catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     },
 
     // create a new Thought
     async createThought(req, res) {
-        try{
+        try {
             const createThoughtData = await Thought.create(req.body);
-            res.json(createThoughtData);
+            await createThoughtData.save()
+            const user = await User.findOneAndUpdate(
+                { username: req.body.username },
+                { $addToSet: { thoughts: createThoughtData._id } },
+                { new: true }
+            )
 
-        }catch(err) {
+            if (!user) {
+                res.status(404).json({ message: 'Thought created but found not user whit that id!!!' })
+            }
+
+            res.json('Thought created');
+        } catch (err) {
             res.status(500).json(err);
         }
     },
@@ -54,7 +64,7 @@ module.exports = {
 
             res.json(updateThoughtData);
 
-        } catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     },
@@ -65,12 +75,12 @@ module.exports = {
             const deleteThoughtData = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
 
             if (!deleteThoughtData) {
-                res.status(404).json({ message: 'No Thought with that id! '})
+                res.status(404).json({ message: 'No Thought with that id! ' })
             }
 
             res.json({ message: 'Thought and thoughts deleted!!!' });
 
-        }catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     }

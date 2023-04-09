@@ -14,11 +14,7 @@ const thoughtSchema = new Schema(
             type: Date,
             default: Date.now,
             get: (date) => {
-                return {
-                    format_time: date.toLocaleTimeString(),
-                    format_date: `${
-                        new Date(date).getMonth() + 1}/${new Date(date).getDate()}/${new Date(date).getFullYear()}`
-                }
+                return date.toISOString();
             }
         },
         username: {
