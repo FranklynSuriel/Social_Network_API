@@ -1,11 +1,16 @@
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought } = require('../models');
+const { User, Thought, Reaction } = require('../models');
 
 module.exports = {
     // get all users
     async getAllUsers(req, res) {
         try {
-            const allUserData = await User.find();
+            const allUserData = await User.find()
+                .populate({ path: 'friends', select: '-__v' })
+            if (!allUserData) {
+                return res.send(404).json({ message: 'No user created at this moment' })
+            }
+
             res.json(allUserData);
         } catch (err) {
             res.status(500).json(err);
@@ -15,28 +20,30 @@ module.exports = {
     // get a single user by id
     async getSingleUser(req, res) {
         try {
-            const singleUserData = await User.findOne({ _id: req.params.userId })
-            .select('-__v')
-            // .populate('thoughts', 'friends')
+            const singleUserData = await User.findOne({ _id: ObjectId(req.params.userId) })
+                // .populate({ path: 'friends', select: 'username, email' })
+                .select('-__v')
+                .populate('thoughts')
+            const  singleFriend = await User.findOne({ _id: ObjectId(req.params.userId) })
 
             if (!singleUserData) {
                 return res.status(404).json({ message: 'No user with that id!' });
             }
 
-            res.json(singleUserData)
+            res.json(singleUserData || singleFriend)
 
-        } catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     },
 
     // create a new user
     async createUser(req, res) {
-        try{
+        try {
             const createUserData = await User.create(req.body);
             res.json(createUserData);
 
-        }catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     },
@@ -56,7 +63,7 @@ module.exports = {
 
             res.json(updateUserData);
 
-        } catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     },
@@ -67,13 +74,13 @@ module.exports = {
             const deleteUserData = await User.findOneAndDelete({ _id: req.params.userId });
 
             if (!deleteUserData) {
-                res.status(404).json({ message: 'No user with that id! '})
+                res.status(404).json({ message: 'No user with that id! ' })
             }
 
             // await Thought.deleteMany({ _id: { $in: user.thoughts } });
             res.json({ message: 'User and thoughts deleted!!!' });
 
-        }catch(err) {
+        } catch (err) {
             res.status(500).json(err);
         }
     }
