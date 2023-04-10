@@ -74,9 +74,10 @@ module.exports = {
 
             if (!deleteUserData) {
                 res.status(404).json({ message: 'No user with that id! ' })
+                return
             }
-
-            await Thought.deleteMany({ _id: { $in: user.thoughts } });
+            
+            await Thought.deleteMany({ username: deleteUserData.username });
 
             res.json({ message: 'User and thoughts deleted!!!' });
 
@@ -118,7 +119,7 @@ module.exports = {
                 res.status(404).json({ message: 'No friend with that id! ' })
             }
             
-            res.json({ message: 'Friend deleted!!!' });
+            res.json(deleteFriendData);
 
         } catch (err) {
             res.status(500).json(err);
