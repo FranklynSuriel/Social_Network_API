@@ -6,7 +6,7 @@ module.exports = {
     async getAllUsers(req, res) {
         try {
             const allUserData = await User.find()
-                .populate({ path: 'friends', select: '-__v' })
+                // .populate({ path: 'friends', select: '-__v' })
             if (!allUserData) {
                 return res.send(404).json({ message: 'No user created at this moment' })
             }
@@ -20,12 +20,11 @@ module.exports = {
     // get a single user by id
     async getSingleUser(req, res) {
         try {
-            const singleUserData = await User.findOne({ _id: ObjectId(req.params.userId) })
-                // .populate({ path: 'friends', select: 'username, email' })
+            const singleUserData = await User.findOne({ _id: ObjectId(req.params.userId) })                
                 .select('-__v')
                 .populate('thoughts')
-            const  singleFriend = await User.findOne({ _id: ObjectId(req.params.userId) })
-
+                .populate('friends')
+            
             if (!singleUserData) {
                 return res.status(404).json({ message: 'No user with that id!' });
             }
@@ -83,5 +82,25 @@ module.exports = {
         } catch (err) {
             res.status(500).json(err);
         }
-    }
+    },
+
+    // add a new friend
+    async addFriend(req, res) {
+        try {
+            const addFriendData = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $addToSet: { friends: req.params.friendId } },
+                { new: true } 
+            )
+
+            if (!addFriendData) {
+                res.status(404).json({ message: 'Friend or User does not exist!!' })
+            }
+
+            res.json(addFriendData);
+
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
 }
