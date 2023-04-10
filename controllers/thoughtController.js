@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongoose').Types;
 const { User, Thought } = require('../models');
 
 module.exports = {
@@ -72,13 +73,19 @@ module.exports = {
     // delete a Thought by id
     async deleteThought(req, res) {
         try {
-            const deleteThoughtData = await Thought.findOneAndDelete({ _id: req.params.thoughtId });
+            const deleteThoughtData = await Thought.findOneAndDelete({ _id: ObjectId(req.params.thoughtId) });
 
+            await User.findOneAndUpdate(
+                { _id: ObjectId(req.params.userId) },
+                { $pull: { thoughts: ObjectId(req.params.thoughtId) } },
+                { new: true }
+            )
+            
             if (!deleteThoughtData) {
                 res.status(404).json({ message: 'No Thought with that id! ' })
             }
 
-            res.json({ message: 'Thought and thoughts deleted!!!' });
+            res.json({ message: 'Thought deleted!!!' });
 
         } catch (err) {
             res.status(500).json(err);
