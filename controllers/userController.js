@@ -1,12 +1,13 @@
 const { ObjectId } = require('mongoose').Types;
 const { User, Thought, Reaction } = require('../models');
+const thoughtController = require('./thoughtController');
 
 module.exports = {
     // get all users
     async getAllUsers(req, res) {
         try {
             const allUserData = await User.find()
-                // .populate({ path: 'friends', select: '-__v' })
+
             if (!allUserData) {
                 return res.send(404).json({ message: 'No user created at this moment' })
             }

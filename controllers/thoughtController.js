@@ -44,7 +44,7 @@ module.exports = {
                 res.status(404).json({ message: 'Thought created but found not user whit that id!!!' })
             }
 
-            res.json('Thought created');
+            res.json(createThoughtData);
         } catch (err) {
             res.status(500).json(err);
         }
@@ -76,10 +76,10 @@ module.exports = {
             const deleteThoughtData = await Thought.findOneAndDelete({ _id: ObjectId(req.params.thoughtId) });
 
             await User.findOneAndUpdate(
-                { _id: ObjectId(req.params.userId) },
-                { $pull: { thoughts: ObjectId(req.params.thoughtId) } },
+                { username: deleteThoughtData.username },
+                { $pull: { thoughts: req.params.thoughtId } },
                 { new: true }
-            )
+                )
             
             if (!deleteThoughtData) {
                 res.status(404).json({ message: 'No Thought with that id! ' })
