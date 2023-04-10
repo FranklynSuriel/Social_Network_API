@@ -1,3 +1,4 @@
+// Require necessary packages and routes
 const { ObjectId } = require('mongoose').Types;
 const { User, Thought, Reaction } = require('../models');
 const thoughtController = require('./thoughtController');
@@ -7,7 +8,7 @@ module.exports = {
     async getAllUsers(req, res) {
         try {
             const allUserData = await User.find()
-
+            // Send a error message if invalid user data
             if (!allUserData) {
                 return res.send(404).json({ message: 'No user created at this moment' })
             }
@@ -18,7 +19,7 @@ module.exports = {
         }
     },
 
-    // get a single user by id
+    // get a single user by id and populate thoughts and friends
     async getSingleUser(req, res) {
         try {
             const singleUserData = await User.findOne({ _id: ObjectId(req.params.userId) })                
@@ -26,8 +27,9 @@ module.exports = {
                 .populate('thoughts')
                 .populate('friends')
             
+            // send an error message if user id does not exist
             if (!singleUserData) {
-                return res.status(404).json({ message: 'No user with that id!' });
+                return res.status(404).json({ message: 'No user with that id!' })
             }
 
             res.json(singleUserData || singleFriend)
@@ -41,6 +43,7 @@ module.exports = {
     async createUser(req, res) {
         try {
             const createUserData = await User.create(req.body);
+
             res.json(createUserData);
 
         } catch (err) {
@@ -56,9 +59,10 @@ module.exports = {
                 { $set: req.body },
                 { runValidators: true, new: true }
             );
-
+            // send an error message if user id does not exist 
             if (!updateUserData) {
-                res.status(404).json({ message: 'No user with that id!' });
+                res.status(404).json({ message: 'No user with that id!' })
+                return;
             }
 
             res.json(updateUserData);
@@ -73,14 +77,15 @@ module.exports = {
         try {
             const deleteUserData = await User.findOneAndDelete({ _id: req.params.userId });
 
+            // send an error message if user id does not exist
             if (!deleteUserData) {
                 res.status(404).json({ message: 'No user with that id! ' })
-                return
+                return ;
             }
-            
+            // get all the thoughts relate to the user and delete
             await Thought.deleteMany({ username: deleteUserData.username });
 
-            res.json({ message: 'User and thoughts deleted!!!' });
+            res.json('User and thoughts deleted!!!');
 
         } catch (err) {
             res.status(500).json(err);
@@ -95,9 +100,10 @@ module.exports = {
                 { $addToSet: { friends: req.params.friendId } },
                 { new: true } 
             )
-
+            // send an error message if user id does not exist
             if (!addFriendData) {
                 res.status(404).json({ message: 'Friend or User does not exist!!' })
+                return;
             }
 
             res.json(addFriendData);
@@ -115,9 +121,11 @@ module.exports = {
                 { $pull: { friends: ObjectId(req.params.friendId) } },
                 { new: true }
             );
-
+            
+            // send an error message if friend id does not exist
             if (!deleteFriendData) {
                 res.status(404).json({ message: 'No friend with that id! ' })
+                return;
             }
             
             res.json(deleteFriendData);

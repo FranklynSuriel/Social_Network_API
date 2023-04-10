@@ -1,3 +1,4 @@
+// Require necessary packages and routes
 const router = require('express').Router();
 
 const {
@@ -30,4 +31,5 @@ router
 .route('/:thoughtId/reactions/:reactionId')
 .delete(deleteReaction)
 
+// Export module
 module.exports = router

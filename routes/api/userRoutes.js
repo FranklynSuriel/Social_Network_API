@@ -1,3 +1,4 @@
+// Require necessary packages and routes
 const router = require('express').Router();
 
 const {
@@ -26,4 +27,5 @@ router
 .post(addFriend)
 .delete(deleteFriend);
 
+// Export Module
 module.exports = router
