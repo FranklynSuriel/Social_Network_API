@@ -90,5 +90,36 @@ module.exports = {
         } catch (err) {
             res.status(500).json(err);
         }
-    }
+    },
+
+    // create a new Reaction
+    async createReaction(req, res) {
+        try {
+            const createReactionData = await Thought.findOneAndUpdate(
+                { _id: ObjectId(req.params.thoughtId) },
+                { $addToSet: { reactions: 
+                    { reactionBody: req.body.reactionBody, username: req.body.username },
+                    
+                } }
+            )
+
+            if (!createReactionData) {
+                res.status(404).json({ message: 'Reaction created but found not thought whit that id!!!' })
+            }
+
+            res.json(createReactionData);
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
+
+    // delete a Reaction
+    async deleteReaction(req, res) {
+        try {
+            
+
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
 }
