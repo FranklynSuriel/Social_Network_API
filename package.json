@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/FranklynSuriel/Social_Network_API#readme",
   "dependencies": {
+    "date-and-time": "^2.4.3",
     "express": "^4.17.1",
     "mongoose": "^6.9.2"
   },
